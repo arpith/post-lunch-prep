@@ -1,0 +1,43 @@
+service: prep-bot
+
+provider:
+  name: aws
+  runtime: python2.7
+  region: us-east-1
+  memorySize: 128
+  timeout: 10
+  environment:
+    email: ${ssm:/prep-bot-email~true}
+    api_key: ${ssm:/prep-bot-api-key~true}
+
+functions:
+  # test:
+  #   handler: handler.test
+  #   events:
+  #     - schedule: cron(20 16 ? * MON-FRI *)
+  pre-announce:
+    handler: handler.pre_announce
+    events:
+      - schedule: cron(15 16 ? * MON-FRI *)
+    environment:
+      topic: Linked Lists
+      link: https://medium.com/@kojinoshiba/data-structures-in-python-series-1-linked-lists-d9f848537b4d
+  announce:
+    handler: handler.announce
+    events:
+      - schedule: cron(45 17 ? * MON-FRI *)
+    environment:
+      easylink: https://leetcode.com/problems/intersection-of-two-linked-lists/description/
+      hardlink: https://leetcode.com/problems/reverse-linked-list/description/
+      person: Sean
+  post-announce:
+    handler: handler.post_announce
+    events:
+      - schedule: cron(30 18 ? * MON-THU *)
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
